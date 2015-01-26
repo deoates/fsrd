@@ -47,26 +47,7 @@
 <link rel="stylesheet" type="text/css" media="all" href="<?php bloginfo( 'stylesheet_url' ); ?>" />
 <?php if ( is_singular() && get_option( 'thread_comments' ) ) wp_enqueue_script( 'comment-reply' ); ?>
 <link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>" />
-<link rel="stylesheet" href="<?php bloginfo( 'template_url' ); ?>/flexslider.css" type="text/css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-<script src="<?php bloginfo( 'template_url' ); ?>/jquery.flexslider.js"></script>
-<!-- Place in the <head>, after the three links -->
-<script type="text/javascript" charset="utf-8">
-  $(window).load(function() {
-    $('.flexslider').flexslider({
-          animation: "fade",
-          controlsContainer: ".flex-container",
-          slideshow: true,                //Boolean: Animate slider automatically
-          slideshowSpeed: 3000,           //Integer: Set the speed of the slideshow cycling, in milliseconds
-          animationSpeed: 1000,            //Integer: Set the speed of animations, in milliseconds
-          initDelay: 0,                   //{NEW} Integer: Set an initialization delay, in milliseconds
-          randomize: false,
-    });
-  });
-</script>
-<!--[if lt IE 9]>
-<script src="<?php echo get_template_directory_uri(); ?>/js/html5.js" type="text/javascript"></script>
-<![endif]-->
 
 <?php wp_head(); ?>
 </head>
