@@ -313,4 +313,92 @@ function toolbox_enhanced_image_navigation( $url ) {
 }
 add_filter( 'attachment_link', 'toolbox_enhanced_image_navigation' );
 
+// Custom filter function to modify default gallery shortcode output
+function my_post_gallery( $output, $attr ) {
 
+  // Initialize
+  global $post, $wp_locale;
+
+  // Gallery instance counter
+  static $instance = 0;
+  $instance++;
+
+  // Validate the author's orderby attribute
+  if ( isset( $attr['orderby'] ) ) {
+    $attr['orderby'] = sanitize_sql_orderby( $attr['orderby'] );
+    if ( ! $attr['orderby'] ) unset( $attr['orderby'] );
+  }
+
+  // Get attributes from shortcode
+  extract( shortcode_atts( array(
+    'order'      => 'ASC',
+    'orderby'    => 'menu_order ID',
+    'id'         => $post->ID,
+    'itemtag'    => 'dl',
+    'icontag'    => 'dt',
+    'captiontag' => 'dd',
+    'columns'    => 3,
+    'size'       => 'large',
+    'include'    => '',
+    'exclude'    => ''
+  ), $attr ) );
+
+  // Initialize
+  $id = intval( $id );
+  $attachments = array();
+  if ( $order == 'RAND' ) $orderby = 'none';
+
+  if ( ! empty( $include ) ) {
+
+    // Include attribute is present
+    $include = preg_replace( '/[^0-9,]+/', '', $include );
+    $_attachments = get_posts( array( 'include' => $include, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby ) );
+
+    // Setup attachments array
+    foreach ( $_attachments as $key => $val ) {
+      $attachments[ $val->ID ] = $_attachments[ $key ];
+    }
+
+  } else if ( ! empty( $exclude ) ) {
+
+    // Exclude attribute is present 
+    $exclude = preg_replace( '/[^0-9,]+/', '', $exclude );
+
+    // Setup attachments array
+    $attachments = get_children( array( 'post_parent' => $id, 'exclude' => $exclude, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby ) );
+  } else {
+    // Setup attachments array
+    $attachments = get_children( array( 'post_parent' => $id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby ) );
+  }
+
+  if ( empty( $attachments ) ) return '';
+
+  // Filter gallery differently for feeds
+  if ( is_feed() ) {
+    $output = "\n";
+    foreach ( $attachments as $att_id => $attachment ) $output .= wp_get_attachment_link( $att_id, $size, true ) . "\n";
+    return $output;
+  }
+
+  // Filter gallery CSS
+  $output = "<div class='slick-slideshow'>";
+
+  // Iterate through the attachments in this gallery instance
+  $i = 0;
+  foreach ( $attachments as $id => $attachment ) {
+
+    // img tag
+    $link = wp_get_attachment_image( $id, $size, false, false ); 
+    $output .= "<div class='gallery-item'> {$link} </div>";
+
+  }
+
+  // End gallery output
+  $output .= "</div>";
+
+  return $output;
+
+}
+
+// Apply filter to default gallery shortcode
+add_filter( 'post_gallery', 'my_post_gallery', 10, 2 );
