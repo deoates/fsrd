@@ -139,7 +139,7 @@ hr {
 #access {
 	display: block;
 	float: right;
-	margin: 30px 15px 0 0px;
+	margin: 25px 15px 0 0px;
 	width: 650px;
 	
 
@@ -425,7 +425,7 @@ blockquote {
 	width: 680px;
 	height: 453px;
 	float: right;
-	background-color: #cacaca;
+	background-color: #eee;
 }
 
 #right_side .entry-title {
